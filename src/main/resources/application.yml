@@ -1,0 +1,10 @@
+app:
+  datasource:
+    jdbc-url: jdbc:postgresql://localhost:5432/database
+    username: postgres
+    password: admin
+    pool-size: 30
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
