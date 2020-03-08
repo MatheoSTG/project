@@ -19,6 +19,7 @@ public class Worker {
 
     @NotBlank
     private String firstname;
+
     @NotBlank
     private String surname;
 

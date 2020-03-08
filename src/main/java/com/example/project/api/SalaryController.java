@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequestMapping("api/v1/salary")
 @RestController
@@ -39,28 +40,36 @@ public class SalaryController {
     }
 
     @GetMapping(path = "year/{id}")
-    public BigDecimal getAmountYear(@PathVariable Long id){
-        return salaryService.getAmountYear(id);
+    public ResponseEntity<BigDecimal> getAmountYear(@PathVariable Long id){
+        if(!workerService.existsById(id)){
+            return ResponseEntity.badRequest().build();
+        }
+        BigDecimal amountYear;
+        try{
+            amountYear = salaryService.getAmountYear(id);
+
+        }catch(NoSuchElementException ex){
+            return ResponseEntity.ok(BigDecimal.ZERO);
+        }
+        return ResponseEntity.ok(amountYear);
     }
 
     @GetMapping(path = "custom/{id}/{beg}/{end}")
-    public BigDecimal getAmountCustom(@PathVariable Long id,
+    public ResponseEntity<BigDecimal> getAmountCustom(@PathVariable Long id,
                                       @PathVariable String beg,
                                       @PathVariable String end){
-        return salaryService.getAmountCustom(id, OffsetDateTime.parse(beg), OffsetDateTime.parse(end));
-    }
-
-    /*
-    @GetMapping(path = "{id}")
-    public ResponseEntity<List<Salary>> getSalariesForOne(@PathVariable Long id, @RequestParam(defaultValue = "0") int page){
-        List<Salary> salariesList = salaryService.getSalariesForOne(id, page);
-        if(salariesList.isEmpty()){
-            return ResponseEntity.notFound().build();
+        if(!workerService.existsById(id)){
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(salariesList);
-    }
+        BigDecimal amountCustom;
+        try{
+            amountCustom = salaryService.getAmountCustom(id, OffsetDateTime.parse(beg), OffsetDateTime.parse(end));
 
-     */
+        }catch(NoSuchElementException ex){
+            return ResponseEntity.ok(BigDecimal.ZERO);
+        }
+        return ResponseEntity.ok(amountCustom);
+    }
 
     @GetMapping(path="search")
     public ResponseEntity<List<Salary>> getSalaries(@RequestParam(name = "id") List<Long> workerList, @RequestParam(defaultValue = "0") int page){

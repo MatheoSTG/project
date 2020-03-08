@@ -6,9 +6,9 @@ import com.example.project.model.Worker;
 import com.example.project.service.SalaryService;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -59,5 +60,20 @@ public class SalaryServiceTests {
         when(salaryRepository.getAmountYear(eq(id), eq(yearBefore))).thenReturn(testSalaries);
         BigDecimal salaryServiceResponse = salaryService.getAmountYear(id);
         assertThat(salaryServiceResponse).isEqualTo(new BigDecimal("750.00"));
+
+    }
+
+    @Test
+    public void getAmountYear_throwNoSuchElementException(){
+        Long id = 2L;
+
+        Worker testNewWorker = new Worker(2L, "Mark", "Henry");
+
+        OffsetDateTime yearBefore = OffsetDateTime.now(clock).minus(1, ChronoUnit.YEARS);
+
+        List<Salary> testSalaries = new ArrayList<>();
+
+        when(salaryRepository.getAmountYear(eq(id), eq(yearBefore))).thenReturn(testSalaries);
+        Assertions.assertThrows(NoSuchElementException.class, () -> salaryService.getAmountYear(id));
     }
 }

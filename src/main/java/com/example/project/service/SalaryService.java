@@ -14,6 +14,7 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class SalaryService {
@@ -35,33 +36,30 @@ public class SalaryService {
     }
 
 
-    public BigDecimal getAmountYear(Long workerId){
+    public BigDecimal getAmountYear(Long workerId) throws NoSuchElementException{
         OffsetDateTime lastYear = OffsetDateTime.now(clock).minus(1, ChronoUnit.YEARS);
         List<Salary> salaries = jpaRepository.getAmountYear(workerId, lastYear);
         int size = salaries.size();
+        if(size==0){
+            throw new NoSuchElementException();
+        }
         BigDecimal sum = salaries.stream()
                 .map(Salary::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return sum.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_EVEN);
     }
 
-    public BigDecimal getAmountCustom(Long workerId, OffsetDateTime begin, OffsetDateTime end){
+    public BigDecimal getAmountCustom(Long workerId, OffsetDateTime begin, OffsetDateTime end) throws NoSuchElementException{
         List<Salary> salaries = jpaRepository.getAmountCustom(workerId, begin, end);
         int size = salaries.size();
-
+        if(size==0){
+            throw new NoSuchElementException();
+        }
         BigDecimal sum = salaries.stream()
                 .map(Salary::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return sum.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_EVEN);
     }
-
-    /*
-    public List<Salary> getSalariesForOne(Long workerId, int page){
-        Pageable pageable = PageRequest.of(page,15, Sort.by("time_stamp"));
-        return jpaRepository.getSalariesForOne(workerId, pageable);
-    }
-
-     */
 
     public List<Salary> getSalaries(List<Long> workerList, int page){
         Pageable pageable = PageRequest.of(page,15, Sort.by("workerid").and(Sort.by("time_stamp")));
