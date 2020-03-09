@@ -91,7 +91,7 @@ public class SalaryController {
         if(salaryService.updateSalary(id, salary)==0){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Updated salary with id="+id);
     }
 
     @DeleteMapping(path = "{id}")
@@ -100,6 +100,6 @@ public class SalaryController {
             return ResponseEntity.notFound().build();
         }
         salaryService.deleteSalary(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Deleted salary with id="+id);
     }
 }

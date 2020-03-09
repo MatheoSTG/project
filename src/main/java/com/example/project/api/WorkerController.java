@@ -37,8 +37,12 @@ public class WorkerController {
     }
 
     @GetMapping
-    public List<Worker> getAllWorkers(@RequestParam(defaultValue = "0") int page){
-        return workerService.getAllWorkers(page);
+    public ResponseEntity<List<Worker>>getAllWorkers(@RequestParam(defaultValue = "0") int page){
+        List<Worker> workerList = workerService.getAllWorkers(page);
+        if(workerList.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(workerList);
     }
 
     @PutMapping(path = "{id}")
@@ -47,7 +51,7 @@ public class WorkerController {
             return ResponseEntity.badRequest().build();
         }
         workerService.updateWorker(id, worker);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Updated worker with id="+id);
     }
 
     @DeleteMapping(path = "{id}")
@@ -56,6 +60,6 @@ public class WorkerController {
             return ResponseEntity.badRequest().build();
         }
         workerService.deleteWorker(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Deleted worker with id="+id);
     }
 }
