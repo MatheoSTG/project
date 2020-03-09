@@ -31,7 +31,7 @@ public class WorkerController {
     public ResponseEntity<Worker> getWorkerById(@PathVariable Long id){
         Optional<Worker> worker = workerService.getWorkerById(id);
         if(!worker.isPresent()){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(worker.get());
     }
